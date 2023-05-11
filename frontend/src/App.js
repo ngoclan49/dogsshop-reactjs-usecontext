@@ -2,37 +2,39 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home/Home";
 import Cart from "./components/Cart/Cart";
 import Navbar from "./components/Navbar/Navbar";
-// import ContextProvider from "./components/Context/ContextProvider";
 import DogsPage from "./components/Dogs/DogsPage";
+import { useEffect, useState } from "react";
+import { CartContext } from "./components/Contexts/CartContext";
 import axios from "axios";
-import { useEffect } from "react";
 
 function App() {
+  const [allDogs, setAllDogs] = useState([]);
+  const [myCart, addToCart] = useState([{}])
+  const [total, setTotal] = useState(0)
+
   useEffect(() => {
     async function getData() {
-      const res = await axios.get("/v1/dogs");
+      const res = await axios.get("http://localhost:8080/v1/dogs");
       return res;
     }
     getData().then((res) => {
-      console.log("res:", res);
+      setAllDogs(res.data);
     });
-    // getData().catch((err) => {
-    //   console.log("err:", err);
-    // });
+    getData().catch((err) => console.log("err:", err));
   }, []);
   return (
-    // <ContextProvider>
-    <Router>
-      <Navbar />
-      <div className="page-container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/dogs" element={<DogsPage />} />
-          <Route path="/cart" element={<Cart />} />
-        </Routes>
-      </div>
-    </Router>
-    // </ContextProvider>
+    <CartContext.Provider value={{myCart, addToCart, total, setTotal}}>
+      <Router>
+        <Navbar />
+        <div className="page-container">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/dogs" element={<DogsPage allDogs={allDogs} />} />
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
+        </div>
+      </Router>
+    </CartContext.Provider>
   );
 }
 

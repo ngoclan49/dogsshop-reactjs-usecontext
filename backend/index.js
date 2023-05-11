@@ -78,6 +78,14 @@ const dogs = [
   },
 ];
 
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
 app.get("/v1/dogs", (req, res) => {
   res.status(200).json(dogs);
 });

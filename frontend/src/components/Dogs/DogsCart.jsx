@@ -1,38 +1,47 @@
-import React, { useState } from "react";
+import { useContext } from "react";
+import { useState } from "react";
+import { CartContext } from "../Contexts/CartContext";
+import "./Dogs.css";
 
 const DogsCart = (props) => {
-  const { dog } = props;
-  const [isAdd, setAdd] = useState(false);
-  const handleClick = () => {
-    setAdd(!isAdd);
+  const { id, name, breed, price, description, imageUrl } = props;
+  const [isAdded, setAdded] = useState(false);
+  const {addToCart, setTotal} = useContext(CartContext)
+
+  const handleAdd = () => {
+    setAdded(true);
+    const newItems = {
+      name: name,
+      price: price, 
+      imageUrl: imageUrl
+    }
+    addToCart((item)=>[...item, newItems])
+    setTotal((total)=>total+=Number(price))
   };
+
   return (
-    <div className="col-md-3">
-      <div className="card mb-3" style={{ height: "450px" }}>
+    <>
+      <section className="dogs">
+        <div className="dogs-info">
+          <p>{name}</p>
+          <p>{breed}</p>
+        </div>
         <div className="dogs-img-container">
-          <img
-            style={{ height: "200px", objectFit: "cover" }}
-            className="card-img-top dog-img"
-            src={dog.imageUrl}
-            alt={dog.name}
-          />
+          <img className="dog-img" src={imageUrl} alt={name} />
         </div>
-        <div className="card-body dogs-info">
-          <h4 className="card-title">{dog.name}</h4>
-          <p className="card-text dogs-des">{dog.description}</p>
-          <p className="card-text dogs-price">${dog.price}</p>
-          {isAdd ? (
-            <button className="dogs-btn btn btn-primary disabled">
-              Added
-            </button>
-          ) : (
-            <button onClick={handleClick} className="dogs-btn btn btn-success">
-              Add to Cart
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+        <div className="dogs-desc">{description}</div>
+        <div className="dogs-price">${price}</div>
+        {isAdded ? (
+          <button disabled className="dogs-btn-disabled">
+            ADDED
+          </button>
+        ) : (
+          <button onClick={handleAdd} className="dogs-btn">
+            ADD TO CART
+          </button>
+        )}
+      </section>
+    </>
   );
 };
 
